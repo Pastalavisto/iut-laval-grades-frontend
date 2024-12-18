@@ -1,12 +1,12 @@
 module.exports = {
-    ci: {
-      collect: {
-        url: ['http://localhost:5174/'],
-        startServerCommand: 'npm run dev'
-      },
-      upload: {
-        target: 'temporary-public-storage'
-      },
+  ci: {
+    collect: {
+      url: ['http://localhost:5174/'],
+      startServerCommand: 'npm run dev'
+    },
+    upload: {
+      target: 'temporary-public-storage'
+    }
     //   assert: {
     //     assertions: {
     //       'categories:performance': ['error', { minscore: 0.9 }],
@@ -15,5 +15,5 @@ module.exports = {
     //       'categories:seo': ['error', { minscore: 0.9 }]
     //     }
     //   },
-    }
-  };
+  }
+};

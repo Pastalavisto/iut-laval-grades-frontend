@@ -3,7 +3,7 @@ function App() {
     <>
       <h1>IUT De Laval - Notes</h1>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
