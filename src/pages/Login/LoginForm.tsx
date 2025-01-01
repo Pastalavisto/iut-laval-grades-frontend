@@ -44,7 +44,11 @@ export function LoginForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-md bg-white shadow-md rounded-lg p-6 space-y-4"
         >
-          <h2 className="text-xl font-bold text-gray-800 text-center">IUT de Laval<br/>-<br/>Gestion des notes</h2>
+          <h2 className="text-xl font-bold text-gray-800 text-center">
+            IUT de Laval
+            <br />-<br />
+            Gestion des notes
+          </h2>
           <FormField
             control={form.control}
             name="email"
