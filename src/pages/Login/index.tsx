@@ -1,9 +1,11 @@
-import { getCurrentUser } from "@/services/auth";
+import { useAuth } from "@/provider/AuthProvider";
 import { LoginForm } from "./LoginForm";
 import { Navigate } from "react-router";
 
 function Login() {
-  if (getCurrentUser()) {
+  const user = useAuth();
+  console.log(user  );
+  if (user?.user) {
     return <Navigate to="/" />;
   }
   return (

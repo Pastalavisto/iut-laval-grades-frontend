@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 
 import { useNavigate } from 'react-router';
-import { login } from '@/services/auth';
+import { useAuth } from '@/provider/AuthProvider';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -22,7 +22,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const navigate = useNavigate();
-
+  const auth = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,8 +32,16 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    login(values.email, values.password).then(() => {
+    auth?.login(values).then(() => {
       navigate('/');
+    }).catch((error) => {
+      console.error(error);
+      if (error.response?.status === 401) {
+        form.setError('password', {
+          type: 'manual',
+          message: 'Email ou mot de passe incorrect.'
+        });
+      }
     });
   }
 

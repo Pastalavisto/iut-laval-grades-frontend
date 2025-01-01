@@ -6,17 +6,20 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import Navbar from './components/NavBar/NavBar.tsx';
 import Login from './pages/Login/index.tsx';
 import { ProtectedRoutes } from './components/ProtectedRoutes.tsx';
+import AuthProvider from './provider/AuthProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <Navbar isLogin={true} />
-      <Routes>
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<App />} />
-        </Route>
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <AuthProvider>
+        <Navbar />
+        <Routes>
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/" element={<App />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

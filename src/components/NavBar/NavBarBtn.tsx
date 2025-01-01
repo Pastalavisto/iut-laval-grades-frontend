@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 
 interface NavBarBtnProps {
   name: string;
-  link: string;
+  link?: string;
+  onClick?: () => void | undefined;
   icon: ReactNode;
 }
 
@@ -12,7 +13,13 @@ export default function NavBarBtn(props: NavBarBtnProps) {
 
   return (
     <button
-      onClick={() => navigate(props.link)}
+      onClick={() => {
+        if (props.link) {
+          navigate(props.link);
+        } else {
+          props.onClick && props.onClick();
+        }
+      }}
       className="flex items-center text-white rounded-lg px-3 transition-all group"
     >
       {props.icon}
