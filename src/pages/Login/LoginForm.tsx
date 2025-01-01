@@ -7,6 +7,9 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '../../provider/authProvider';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -14,10 +17,13 @@ const formSchema = z.object({
   }),
   password: z.string().min(6, {
     message: 'Le mot de passe doit contenir au moins 6 caractères.'
-  })
+  }) 
 });
 
 export function LoginForm() {
+  const { setToken } = useAuth();
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -27,7 +33,12 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+      axios.post('http://localhost:3000/api/auth/login', values).then((response) => {
+          console.log(response.data);
+          setToken(response.data.token);
+          console.log(localStorage.getItem('token'));
+          navigate('/');
+      })
   }
 
   return (
