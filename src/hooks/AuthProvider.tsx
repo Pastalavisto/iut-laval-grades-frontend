@@ -3,7 +3,7 @@ import axios from "axios";
 import { useContext, createContext, useState, ReactNode } from "react";
 import { useNavigate } from "react-router";
 
-const API_URL = "http://localhost:3000/api/auth/";
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface LoginData {
     email: string;

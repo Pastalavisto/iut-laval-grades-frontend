@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 
 import { useNavigate } from 'react-router';
-import { useAuth } from '@/provider/AuthProvider';
+import { useAuth } from '@/hooks/AuthProvider';
 
 const formSchema = z.object({
   email: z.string().email({

@@ -1,4 +1,4 @@
-import { useAuth } from "@/provider/AuthProvider";
+import { useAuth } from "@/hooks/AuthProvider";
 import { LoginForm } from "./LoginForm";
 import { Navigate } from "react-router";
 

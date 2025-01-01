@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import Navbar from './components/NavBar/NavBar.tsx';
 import Login from './pages/Login/index.tsx';
 import { ProtectedRoutes } from './components/ProtectedRoutes.tsx';
-import AuthProvider from './provider/AuthProvider.tsx';
+import AuthProvider from './hooks/AuthProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

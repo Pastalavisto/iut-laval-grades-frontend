@@ -9,7 +9,7 @@ import {
 import NavBarContent from './NavBarContent';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NavBarMobileOpen from './NavBarMobileOpen';
-import { useAuth } from '@/provider/AuthProvider';
+import { useAuth } from '@/hooks/AuthProvider';
 
 export default function Navbar() {
   const isLogin = useAuth()?.user !== null;
