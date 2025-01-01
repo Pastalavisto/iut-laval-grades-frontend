@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '../../provider/authProvider';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router';
+import { login } from '@/services/auth';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -21,7 +21,6 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
-  const { setToken } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,12 +32,9 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-      axios.post('http://localhost:3000/api/auth/login', values).then((response) => {
-          console.log(response.data);
-          setToken(response.data.token);
-          console.log(localStorage.getItem('token'));
+      login(values.email, values.password).then(() => {
           navigate('/');
-      })
+      });
   }
 
   return (
