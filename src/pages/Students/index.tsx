@@ -97,7 +97,7 @@ export default function Students() {
       />
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md overflow-y-scroll max-h-screen">
           <DialogHeader>
             <DialogTitle>Ajouter un étudiant</DialogTitle>
             <DialogDescription></DialogDescription>
