@@ -1,4 +1,4 @@
-import { useAuth } from "../hooks/AuthProvider";
+import { useAuth } from '../hooks/AuthProvider';
 import { Navigate, Outlet } from 'react-router';
 
 export const ProtectedRoutes = () => {
@@ -7,4 +7,4 @@ export const ProtectedRoutes = () => {
     return <Navigate to="/login" />;
   }
   return <Outlet />;
-}
+};
