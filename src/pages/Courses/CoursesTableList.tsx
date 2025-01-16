@@ -17,6 +17,7 @@ export default function CoursesTableList(props: CoursesTableListProps) {
           <TableHead>Code</TableHead>
           <TableHead>Nom</TableHead>
           <TableHead>Crédits ECTS</TableHead>
+          <TableHead>Description</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -25,6 +26,7 @@ export default function CoursesTableList(props: CoursesTableListProps) {
             <TableCell>{course.code}</TableCell>
             <TableCell>{course.name}</TableCell>
             <TableCell>{course.credits}</TableCell>
+            <TableCell>{course.description}</TableCell>
           </TableRow>
         ))}
       </TableBody>
