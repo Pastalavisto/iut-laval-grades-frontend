@@ -8,6 +8,7 @@ import Login from './pages/Login/index.tsx';
 import { ProtectedRoutes } from './components/ProtectedRoutes.tsx';
 import AuthProvider from './hooks/AuthProvider.tsx';
 import Students from './pages/Students/index.tsx';
+import Courses from './pages/Courses/index.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
 
 createRoot(document.getElementById('root')!).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Students />} />
+            <Route path="/courses" element={<Courses />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
