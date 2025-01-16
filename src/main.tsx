@@ -7,6 +7,7 @@ import Navbar from './components/NavBar/NavBar.tsx';
 import Login from './pages/Login/index.tsx';
 import { ProtectedRoutes } from './components/ProtectedRoutes.tsx';
 import AuthProvider from './hooks/AuthProvider.tsx';
+import Statistics from './pages/Statistics/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<App />} />
+            <Route path="/stats" element={<Statistics />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
