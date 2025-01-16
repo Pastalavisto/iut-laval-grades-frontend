@@ -1,24 +1,15 @@
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogClose,
-  DialogFooter,
-  DialogHeader
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogHeader } from '@/components/ui/dialog';
 import AddStudentForm from './AddStudentForm';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { userAddformSchema } from './AddStudentForm';
 import { z } from 'zod';
 import axios from 'axios';
 import { useAuth } from '@/hooks/AuthProvider';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import StudentsTableList from './StudentsTableList';
-import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
 
 export default function Students() {
@@ -30,7 +21,6 @@ export default function Students() {
 
   const user = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   //Whenever the dialog form is submitted
   //Sends data to the server
@@ -89,10 +79,10 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  });
 
   return (
-    <>
+    <div className="max-w-6xl mx-auto p-4">
       <div className="flex justify-between">
         <h1 className="font-bold">Liste des étudiants</h1>
         <Button variant="outline" onClick={() => setOpenDialog(!openDialog)}>
@@ -122,18 +112,17 @@ export default function Students() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <StudentsTableList
-        students={
-          search !== ''
-            ? students.filter(
-                (s) =>
-                  s.firstName.toLowerCase().includes(search.toLowerCase()) ||
-                  s.lastName.toLowerCase().includes(search.toLowerCase())
-              )
-            : students
-        }
-      />
-    </>
+        <StudentsTableList
+          students={
+            search !== ''
+              ? students.filter(
+                  (s) =>
+                    s.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                    s.lastName.toLowerCase().includes(search.toLowerCase())
+                )
+              : students
+          }
+        />
+    </div>
   );
 }
