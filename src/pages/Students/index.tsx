@@ -79,10 +79,10 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents();
-  });
+  }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <>
       <div className="flex justify-between">
         <h1 className="font-bold">Liste des étudiants</h1>
         <Button variant="outline" onClick={() => setOpenDialog(!openDialog)}>
@@ -123,6 +123,6 @@ export default function Students() {
               : students
           }
         />
-    </div>
+    </>
   );
 }
