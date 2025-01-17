@@ -11,11 +11,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import StudentsTableList from './StudentsTableList';
 import { Input } from '@/components/ui/input';
+import { Student } from '@/types/student';
 
 export default function Students() {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const [students, setStudents] = useState<z.infer<typeof userAddformSchema>[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -40,7 +41,7 @@ export default function Students() {
             title: 'Étudiant ajouté',
             description: 'L’étudiant a été ajouté avec succès.'
           });
-          setStudents([...students, values]);
+          setStudents([...students, res.data]);
           setOpenDialog(false);
         } else if (res.status === 401) {
           toast({
@@ -112,17 +113,17 @@ export default function Students() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        <StudentsTableList
-          students={
-            search !== ''
-              ? students.filter(
-                  (s) =>
-                    s.firstName.toLowerCase().includes(search.toLowerCase()) ||
-                    s.lastName.toLowerCase().includes(search.toLowerCase())
-                )
-              : students
-          }
-        />
+      <StudentsTableList
+        students={
+          search !== ''
+            ? students.filter(
+                (s) =>
+                  s.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                  s.lastName.toLowerCase().includes(search.toLowerCase())
+              )
+            : students
+        }
+      />
     </>
   );
 }

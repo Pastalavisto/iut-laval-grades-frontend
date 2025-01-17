@@ -10,6 +10,7 @@ import AuthProvider from './hooks/AuthProvider.tsx';
 import Students from './pages/Students/index.tsx';
 import Courses from './pages/Courses/index.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
+import StudentPage from './pages/StudentPage/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -23,6 +24,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/courses" element={<Courses />} />
           </Route>
           <Route path="/login" element={<Login />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/students/:id" element={<StudentPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
