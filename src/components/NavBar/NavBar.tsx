@@ -1,11 +1,5 @@
 import { Link } from 'react-router';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarProvider,
-} from '../ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarProvider } from '../ui/sidebar';
 import NavBarContent from './NavBarContent';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NavBarMobileOpen from './NavBarMobileOpen';
