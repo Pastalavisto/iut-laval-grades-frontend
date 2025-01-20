@@ -10,6 +10,7 @@ import AuthProvider from './hooks/AuthProvider.tsx';
 import Students from './pages/Students/index.tsx';
 import Courses from './pages/Courses/index.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
+import Statistics from './pages/Statistics/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Students />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/stats" element={<Statistics />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
