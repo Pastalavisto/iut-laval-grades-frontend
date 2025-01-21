@@ -37,11 +37,13 @@ export default function StudentPage() {
   const { id } = useParams();
   const user = useAuth();
   const [studentGrades, setStudentsGrades] = useState<Grade[] | []>([]);
+  const [gradeToEdit, setGradeToEdit] = useState<Grade | undefined>(undefined);
   const [studentInfos, setStudentInfos] = useState<Student | undefined>(undefined);
   const [courses, setCourses] = useState<Course[] | []>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedYear, setSelectedYear] = useState('');
   const [years, setYears] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   async function fetchYears() {
     await axios
@@ -64,48 +66,97 @@ export default function StudentPage() {
       });
   }
 
-  async function onSubmit(values: z.infer<typeof gradeAddFormSchema>) {
-    const curCourse = courses.find((c) => c.id === parseInt(values.courseId));
-    await axios
-      .post(
-        API_URL + '/grades',
-        {
-          ...values,
-          courseId: parseInt(values.courseId)
-        },
-        { headers: { Authorization: `Bearer ${user?.user?.token}` } }
-      )
-      .then((res) => {
-        if (res.status === 201) {
-          toast({
-            title: 'Note ajoutée',
-            description: 'La note a été ajoutée avec succès.'
-          });
-          setStudentsGrades([
-            ...studentGrades,
-            {
-              ...values,
-              courseName: curCourse?.name || 'N/A',
-              courseId: curCourse?.id?.toString() || '', // Conversion en string
-              id: res.data.id,
-              courseCode: curCourse?.code || 'N/A',
-              credits: curCourse?.credits || 0
+  // Either POST or PUT (add a grade, or edit a grade)
+  async function onGradeFormSubmit(values: z.infer<typeof gradeAddFormSchema>) {
+    console.log(JSON.stringify(values))
+    if (values.gradeId) {
+      await axios
+        .put(
+          API_URL + '/grades/' + values.gradeId,
+          {
+            grade: values.grade
+          },
+          { headers: { Authorization: `Bearer ${user?.user?.token}` } }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            toast({
+              title: 'Note modifiée',
+              description: 'La note a été modifiée avec succès.'
+            });
+            setOpenDialog(false);
+            setGradeToEdit(undefined);
+            setStudentsGrades((prevGrades) =>
+              prevGrades.map((grade) =>
+                grade.id === values.gradeId
+                  ? { ...grade, grade: values.grade } // Mise à jour de la note
+                  : grade
+              )
+            );
+          }
+        }).catch((e) => {
+          if (e.status === 401) {
+            toast({
+              title: 'Erreur',
+              description: 'Vous n’êtes pas autorisé à effectuer cette action.'
+            });
+            user?.logOut();
+            if (e.status === 500) {
+              toast({
+                title: 'Erreur',
+                description: 'Une erreur est survenue lors de la modification de la note.'
+              });
             }
-          ]);
-          setOpenDialog(false);
-        } else if (res.status === 401) {
-          toast({
-            title: 'Erreur',
-            description: 'Vous n’êtes pas autorisé à effectuer cette action.'
-          });
-          user?.logOut();
-        } else if (res.status === 500) {
-          toast({
-            title: 'Erreur',
-            description: 'Une erreur est survenue lors de l’ajout de l’étudiant.'
-          });
-        }
-      });
+          }
+        })
+    } else {
+      const curCourse = courses.find((c) => c.id === parseInt(values.courseId));
+      await axios
+        .post(
+          API_URL + '/grades',
+          {
+            ...values,
+            courseId: parseInt(values.courseId)
+          },
+          { headers: { Authorization: `Bearer ${user?.user?.token}` } }
+        )
+        .then((res) => {
+          if (res.status === 201) {
+            toast({
+              title: 'Note ajoutée',
+              description: 'La note a été ajoutée avec succès.'
+            });
+            setStudentsGrades([
+              ...studentGrades,
+              {
+                ...values,
+                courseName: curCourse?.name || 'N/A',
+                courseId: curCourse?.id?.toString() || '', // Conversion en string
+                id: res.data.id,
+                courseCode: curCourse?.code || 'N/A',
+                credits: curCourse?.credits || 0
+              }
+            ]);
+            setOpenDialog(false);
+          }
+        }).catch((e) => {
+          if (e.status === 401) {
+            toast({
+              title: 'Erreur',
+              description: 'Vous n’êtes pas autorisé à effectuer cette action.'
+            });
+            user?.logOut();
+            if (e.status === 500) {
+              toast({
+                title: 'Erreur',
+                description: 'Une erreur est survenue lors de l’ajout de la note.'
+              });
+            }
+          }
+        })
+
+
+    }
   }
 
   // Either fetches student infos or grades
@@ -202,6 +253,12 @@ export default function StudentPage() {
       });
   }
 
+  // Opening the dialog again to edit a grade
+  async function editGrade(grade: Grade) {
+    setOpenDialog(true);
+    setGradeToEdit(grade);
+  }
+
   useEffect(() => {
     async function fetchPageData() {
       await fetchStudent('/grades/student')
@@ -212,10 +269,17 @@ export default function StudentPage() {
         .catch((err) => console.log(err));
       await fetchCourses();
       await fetchYears();
+
+      setIsLoading(false);
     }
 
     fetchPageData();
   }, []);
+
+  // Remove grade to edit on dialog close
+  useEffect(() => {
+    if (!openDialog) setGradeToEdit(undefined);
+  }, [openDialog])
 
   return (
     <>
@@ -274,10 +338,10 @@ export default function StudentPage() {
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="sm:max-w-md overflow-y-scroll max-h-screen">
           <DialogHeader>
-            <DialogTitle>Ajouter une note</DialogTitle>
+            <DialogTitle>{gradeToEdit ? "Modifier une note" : "Ajouter une note"}</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          {studentInfos && <AddGradeForm onSubmit={onSubmit} id={studentInfos.id} courses={courses} />}
+          {studentInfos && <AddGradeForm onSubmit={onGradeFormSubmit} id={studentInfos.id} courses={courses} gradeToEdit={gradeToEdit} />}
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -287,7 +351,7 @@ export default function StudentPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <GradesList grades={studentGrades} year={selectedYear} onDeleteGrade={handleGradeDeletion} />
+      <GradesList isLoading={isLoading} grades={studentGrades} year={selectedYear} onDeleteGrade={handleGradeDeletion} onEditGrade={editGrade} />
     </>
   );
 }

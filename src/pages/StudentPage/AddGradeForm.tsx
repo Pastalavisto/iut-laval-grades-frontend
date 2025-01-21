@@ -6,12 +6,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Course } from '@/types/course';
+import { Grade } from '@/types/grade';
 
 // Define the schema needed for the form based on the Grade interface
 export const gradeAddFormSchema = z.object({
-  // Hidden fields
   studentId: z.number(),
-
   courseId: z.string({ required_error: 'Entrez un numéro de cours' }),
   grade: z
     .number({ required_error: 'Entrez une note' })
@@ -27,18 +26,27 @@ export const gradeAddFormSchema = z.object({
         return startYear < endYear;
       },
       { message: "L'année de début doit être inférieure à l'année de fin" }
-    )
+    ),
+  gradeId: z.number().optional(), // For edit purposes
 });
 
 interface AddGradeFormProps {
   id: number;
   courses: Course[];
+  gradeToEdit?: Grade;
   onSubmit: (values: z.infer<typeof gradeAddFormSchema>) => void;
 }
 
 export default function AddGradeForm(props: AddGradeFormProps) {
+  const gradeToEdit: Grade | undefined = props.gradeToEdit;
+
   const defaultValues = {
-    studentId: props.id
+    studentId: props.id,
+    courseId: gradeToEdit?.courseId?.toString() || '',
+    grade: gradeToEdit?.grade !== undefined ? Number(gradeToEdit.grade) : undefined,
+    semester: gradeToEdit?.semester || '',
+    academicYear: gradeToEdit?.academicYear || '',
+    gradeId: gradeToEdit?.id
   };
 
   const form = useForm<z.infer<typeof gradeAddFormSchema>>({
@@ -61,7 +69,7 @@ export default function AddGradeForm(props: AddGradeFormProps) {
             <FormItem>
               <FormLabel>Cours</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value || ''}>
+                <Select onValueChange={field.onChange} value={field.value || ''} disabled={gradeToEdit !== undefined}>
                   <SelectTrigger className="w-[280px]">
                     <SelectValue placeholder="Nom de la matière" />
                     <SelectContent>
@@ -90,6 +98,7 @@ export default function AddGradeForm(props: AddGradeFormProps) {
                   {...field}
                   value={field.value || ''}
                   type="number"
+                  
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
@@ -104,7 +113,7 @@ export default function AddGradeForm(props: AddGradeFormProps) {
             <FormItem>
               <FormLabel>Semestre</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value || ''}>
+                <Select onValueChange={field.onChange} value={field.value || ''} disabled={gradeToEdit !== undefined}>
                   <SelectTrigger className="w-[280px]">
                     <SelectValue placeholder="Semestre" />
                     <SelectContent>
@@ -127,7 +136,7 @@ export default function AddGradeForm(props: AddGradeFormProps) {
             <FormItem className="flex flex-col">
               <FormLabel>Année Scolaire</FormLabel>
               <FormControl>
-                <Input placeholder="2021-2022" {...field} value={field.value || ''} />
+                <Input placeholder="2021-2022" {...field} value={field.value || ''} disabled={gradeToEdit !== undefined}/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -146,6 +155,23 @@ export default function AddGradeForm(props: AddGradeFormProps) {
             </FormItem>
           )}
         />
+
+        {
+          gradeToEdit && (
+            <FormField
+              control={form.control}
+              name="gradeId"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <Input type='hidden' {...field} value={props.id} readOnly />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        }
         <Button
           type="submit"
           className="bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
