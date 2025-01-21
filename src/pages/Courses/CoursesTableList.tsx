@@ -13,11 +13,10 @@ export default function CoursesTableList(props: CoursesTableListProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Code</TableHead>
-          <TableHead>Nom</TableHead>
-          <TableHead>Crédits ECTS</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead className="w-[25%]">Code</TableHead>
+          <TableHead className="w-[25%]">Nom</TableHead>
+          <TableHead className="w-[25%]">Crédits ECTS</TableHead>
+          <TableHead className="w-[25%]">Description</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
