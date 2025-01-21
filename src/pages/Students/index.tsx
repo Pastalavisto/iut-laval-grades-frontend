@@ -11,11 +11,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import StudentsTableList from './StudentsTableList';
 import { Input } from '@/components/ui/input';
+import { Student } from '@/types/student';
 
 export default function Students() {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const [students, setStudents] = useState<z.infer<typeof userAddformSchema>[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -40,15 +41,18 @@ export default function Students() {
             title: 'Étudiant ajouté',
             description: 'L’étudiant a été ajouté avec succès.'
           });
-          setStudents([...students, values]);
+          setStudents([...students, res.data]);
           setOpenDialog(false);
-        } else if (res.status === 401) {
+        }
+      })
+      .catch((err) => {
+        if (err.status === 401) {
           toast({
             title: 'Erreur',
             description: 'Vous n’êtes pas autorisé à effectuer cette action.'
           });
           user?.logOut();
-        } else if (res.status === 500) {
+        } else if (err.status === 500) {
           toast({
             title: 'Erreur',
             description: 'Une erreur est survenue lors de l’ajout de l’étudiant.'
@@ -59,22 +63,27 @@ export default function Students() {
 
   //Fetch the students from the server
   async function fetchStudents() {
-    axios.get(API_URL + '/students', { headers: { Authorization: `Bearer ${user?.user?.token}` } }).then((res) => {
-      if (res.status === 200 && res.data) {
-        setStudents(res.data);
-      } else if (res.status === 401) {
-        toast({
-          title: 'Erreur',
-          description: 'Vous n’êtes pas autorisé à effectuer cette action.'
-        });
-        user?.logOut();
-      } else if (res.status === 500) {
-        toast({
-          title: 'Erreur',
-          description: 'Une erreur est survenue lors de la récupération des étudiants.'
-        });
-      }
-    });
+    axios
+      .get(API_URL + '/students', { headers: { Authorization: `Bearer ${user?.user?.token}` } })
+      .then((res) => {
+        if (res.status === 200 && res.data) {
+          setStudents(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.status === 401) {
+          toast({
+            title: 'Erreur',
+            description: 'Vous n’êtes pas autorisé à effectuer cette action.'
+          });
+          user?.logOut();
+        } else if (err.status === 500) {
+          toast({
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la récupération des étudiants.'
+          });
+        }
+      });
   }
 
   useEffect(() => {
@@ -112,17 +121,17 @@ export default function Students() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        <StudentsTableList
-          students={
-            search !== ''
-              ? students.filter(
-                  (s) =>
-                    s.firstName.toLowerCase().includes(search.toLowerCase()) ||
-                    s.lastName.toLowerCase().includes(search.toLowerCase())
-                )
-              : students
-          }
-        />
+      <StudentsTableList
+        students={
+          search !== ''
+            ? students.filter(
+                (s) =>
+                  s.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                  s.lastName.toLowerCase().includes(search.toLowerCase())
+              )
+            : students
+        }
+      />
     </>
   );
 }
