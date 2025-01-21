@@ -1,5 +1,3 @@
-'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -32,17 +30,20 @@ export function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    auth?.login(values).then(() => {
-      navigate('/');
-    }).catch((error) => {
-      console.error(error);
-      if (error.response?.status === 401) {
-        form.setError('password', {
-          type: 'manual',
-          message: 'Email ou mot de passe incorrect.'
-        });
-      }
-    });
+    auth
+      ?.login(values)
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error(error);
+        if (error.response?.status === 401) {
+          form.setError('password', {
+            type: 'manual',
+            message: 'Email ou mot de passe incorrect.'
+          });
+        }
+      });
   }
 
   return (
