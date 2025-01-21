@@ -10,6 +10,7 @@ import AuthProvider from './hooks/AuthProvider.tsx';
 import Students from './pages/Students/index.tsx';
 import Courses from './pages/Courses/index.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
+import StudentPage from './pages/StudentPage/index.tsx';
 import Statistics from './pages/Statistics/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
@@ -18,14 +19,18 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <Navbar />
         <Toaster />
-        <Routes>
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/" element={<Students />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/stats" element={<Statistics />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-        </Routes>
+        <div className="container mx-auto p-4">
+          <Routes>
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/" element={<Students />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/stats" element={<Statistics />} />
+              <Route path="/students" element={<Students />} />
+              <Route path="/students/:id" element={<StudentPage />} />
+            </Route>
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </div>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>
