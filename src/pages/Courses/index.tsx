@@ -8,13 +8,13 @@ import axios from 'axios';
 import { useAuth } from '@/hooks/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import CoursesTableList, { Course } from './CoursesTableList';
+import CoursesTableList from './CoursesTableList';
 import { Input } from '@/components/ui/input';
 
 export default function Courses() {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<z.infer<typeof courseAddformSchema>[]>([]);
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -38,7 +38,7 @@ export default function Courses() {
             title: 'Cours ajouté',
             description: 'Le cours a été ajouté avec succès.'
           });
-          fetchCourses();
+          setCourses([...courses, values]);
           setOpenDialog(false);
         }
       })
@@ -76,35 +76,6 @@ export default function Courses() {
         });
       }
     });
-  }
-
-  async function deleteCourse(id: string) {
-    await axios
-      .delete(API_URL + '/courses/' + id, { headers: { Authorization: `Bearer ${user?.user?.token}` } })
-      .then((res) => {
-        if (res.status === 204) {
-          toast({
-            title: 'Cours supprimé',
-            description: 'Le cours a été supprimé avec succès.'
-          });
-          setCourses(courses.filter((course) => course.id !== id));
-        }
-      })
-      .catch((err) => {
-        if (err.status === 404) {
-          toast({
-            variant: 'destructive',
-            title: 'Erreur',
-            description: 'Une erreur est survenue lors de la suppression du cours.'
-          });
-        } else if (err.status === 500) {
-          toast({
-            variant: 'destructive',
-            title: 'Erreur',
-            description: 'Une erreur est survenue lors de la suppression du cours.'
-          });
-        }
-      });
   }
 
   useEffect(() => {
@@ -152,8 +123,6 @@ export default function Courses() {
               )
             : courses
         }
-        onDeleteGrade={deleteCourse}
-        
       />
     </>
   );
