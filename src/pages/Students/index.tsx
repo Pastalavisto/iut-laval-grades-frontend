@@ -1,17 +1,16 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogHeader } from '@/components/ui/dialog';
-import AddStudentForm from './AddStudentForm';
-import { DialogDescription } from '@radix-ui/react-dialog';
-import { userAddformSchema } from './AddStudentForm';
-import { z } from 'zod';
-import axios from 'axios';
-import { useAuth } from '@/hooks/AuthProvider';
-import { format } from 'date-fns';
-import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
-import StudentsTableList from './StudentsTableList';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types/student';
+import { DialogDescription } from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import AddStudentForm, { userAddformSchema } from './AddStudentForm';
+import StudentsTableList from './StudentsTableList';
 
 export default function Students() {
   const API_URL = import.meta.env.VITE_API_URL;

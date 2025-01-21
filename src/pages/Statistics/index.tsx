@@ -1,10 +1,3 @@
-import FilterBar from './FilterBar';
-import StatisticDisplay from './StatisticDisplay';
-import axios from 'axios';
-import { useAuth } from '@/hooks/AuthProvider';
-import { useEffect, useState } from 'react';
-import { Course } from '@/types/course';
-import { Student } from '@/types/student';
 import {
   Select,
   SelectContent,
@@ -14,6 +7,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { useAuth } from '@/hooks/AuthProvider';
+import { Course } from '@/types/course';
+import { Student } from '@/types/student';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import FilterBar from './FilterBar';
+import StatisticDisplay from './StatisticDisplay';
 
 interface globalStatistic {
   globalAverage: number;
@@ -219,7 +219,7 @@ export default function Statistics() {
             descriptionStatistic={'Total des cours disponibles'}
           />
           <StatisticDisplay
-            numberStatistic={parseFloat(globalStatistics.averageSuccessRate.toString()).toFixed(2)+"%"}
+            numberStatistic={parseFloat(globalStatistics.averageSuccessRate.toString()).toFixed(2) + '%'}
             labelStatistic={'Taux de réussite'}
             descriptionStatistic={'Taux de réussite moyen'}
           />

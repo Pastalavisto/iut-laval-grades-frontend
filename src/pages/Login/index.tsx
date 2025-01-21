@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/AuthProvider';
-import { LoginForm } from './LoginForm';
 import { Navigate } from 'react-router';
+import { LoginForm } from './LoginForm';
 
 function Login() {
   const user = useAuth();

@@ -1,7 +1,7 @@
-import { UserGroupIcon, AcademicCapIcon, CheckBadgeIcon } from '@heroicons/react/16/solid';
+import { useAuth } from '@/hooks/AuthProvider';
+import { AcademicCapIcon, UserGroupIcon } from '@heroicons/react/16/solid';
 import { ChartBarIcon, LogOutIcon } from 'lucide-react';
 import NavBarBtn from './NavBarBtn';
-import { useAuth } from '@/hooks/AuthProvider';
 
 export default function NavBarContent() {
   let iconClass = 'size-6 mr-2';
