@@ -12,9 +12,10 @@ export const courseAddformSchema = z.object({
   courseId: z.number().optional(), // Edit purposes
   code: z.string({ required_error: 'Entrez un code' }),
   name: z.string({ required_error: 'Entrez un nom' }),
-  credits: z.coerce
+  credits: z
     .number({ required_error: 'Entrez une valeur', message: 'Entrez une valeur' })
-    .positive({ message: 'Entrez une valeur positive' }),
+    .min(1, { message: 'Le nombre de crédits ECTS doit être supérieur ou égal à 1' })
+    .max(60, { message: 'Le nombre de crédits ECTS doit être inférieur ou égal à 60' }),
   description: z.string().optional()
 });
 
@@ -32,10 +33,10 @@ export default function AddCourseForm(props: AddCourseFormProps) {
     resolver: zodResolver(courseAddformSchema),
     defaultValues: {
       courseId: courseToEdit?.id,
-      code: courseToEdit?.code || '',
-      name: courseToEdit?.name || '',
-      credits: courseToEdit?.credits || 0,
-      description: courseToEdit?.description || ''
+      code: courseToEdit?.code || undefined,
+      name: courseToEdit?.name || undefined,
+      credits: courseToEdit?.credits || 1,
+      description: courseToEdit?.description || undefined
     }
   });
 
@@ -80,7 +81,7 @@ export default function AddCourseForm(props: AddCourseFormProps) {
             <FormItem>
               <FormLabel>Crédits ECTS</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} min={1} max={60} onChange={(e) => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
