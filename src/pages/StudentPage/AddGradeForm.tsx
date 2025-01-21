@@ -96,9 +96,10 @@ export default function AddGradeForm(props: AddGradeFormProps) {
                 <Input
                   placeholder="Note entre 0 et 20"
                   {...field}
-                  value={field.value || ''}
+                  value={field.value ?? ''}
                   type="number"
-                  
+                  min={0}
+                  max={20}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
