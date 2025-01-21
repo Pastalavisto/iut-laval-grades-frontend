@@ -5,9 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Textarea } from '@/components/ui/textarea';
+import { Course } from '@/types/course';
 
 //Define the schema needed for the form
 export const courseAddformSchema = z.object({
+  courseId: z.number().optional(), // Edit purposes
   code: z.string({ required_error: 'Entrez un code' }),
   name: z.string({ required_error: 'Entrez un nom' }),
   credits: z.coerce
@@ -18,13 +20,23 @@ export const courseAddformSchema = z.object({
 
 interface AddCourseFormProps {
   onSubmit: (values: z.infer<typeof courseAddformSchema>) => void;
+  courseToEdit?: Course
 }
 
 export default function AddCourseForm(props: AddCourseFormProps) {
+  const courseToEdit = props.courseToEdit;
+
   //Create the form with the schema
   //z.infer generates the type of the form based on the schema
   const form = useForm<z.infer<typeof courseAddformSchema>>({
-    resolver: zodResolver(courseAddformSchema)
+    resolver: zodResolver(courseAddformSchema),
+    defaultValues: {
+      courseId: courseToEdit?.id,
+      code: courseToEdit?.code || '',
+      name: courseToEdit?.name || '',
+      credits: courseToEdit?.credits || 0,
+      description: courseToEdit?.description || ''
+    }
   });
 
   //Whenever the dialog form is submitted
@@ -87,6 +99,21 @@ export default function AddCourseForm(props: AddCourseFormProps) {
             </FormItem>
           )}
         />
+
+        {courseToEdit && (
+          <FormField
+            control={form.control}
+            name="courseId"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <Input type='hidden' {...field} value={courseToEdit.id} readOnly />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button
           type="submit"
           className="bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

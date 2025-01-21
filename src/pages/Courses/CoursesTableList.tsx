@@ -1,17 +1,11 @@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { TrashIcon } from '@heroicons/react/16/solid';
-
-export interface Course {
-  id: string;
-  code: string;
-  name: string;
-  credits: number;
-  description: string;
-}
+import { Course } from '@/types/course';
+import { PencilIcon, TrashIcon } from '@heroicons/react/16/solid';
 
 interface CoursesTableListProps {
-  courses: Course[]; //List of courses
-  onDeleteGrade: (id: string) => void; //Function to delete a course
+  courses: Course[];
+  onDeleteCourse: (id: number) => void;
+  onEditCourse: (course: Course) => void;
 }
 
 export default function CoursesTableList(props: CoursesTableListProps) {
@@ -33,8 +27,9 @@ export default function CoursesTableList(props: CoursesTableListProps) {
             <TableCell>{course.name}</TableCell>
             <TableCell>{course.credits}</TableCell>
             <TableCell>{course.description}</TableCell>
-            <TableCell>
-              <TrashIcon width={20} className="cursor-pointer" onClick={() => props.onDeleteGrade(course.id)} />
+            <TableCell className='flex gap-2'>
+              <PencilIcon width={20} className="cursor-pointer" onClick={() => props.onEditCourse(course)} />
+              <TrashIcon width={20} className="cursor-pointer" onClick={() => props.onDeleteCourse(course.id)} />
             </TableCell>
           </TableRow>
         ))}
