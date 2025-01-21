@@ -1,6 +1,6 @@
 import User from '@/types/user';
 import axios from 'axios';
-import { useContext, createContext, useState, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const API_URL = import.meta.env.VITE_API_URL;

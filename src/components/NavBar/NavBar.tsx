@@ -1,9 +1,9 @@
+import { useAuth } from '@/hooks/AuthProvider';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Link } from 'react-router';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarProvider } from '../ui/sidebar';
 import NavBarContent from './NavBarContent';
-import { useIsMobile } from '@/hooks/use-mobile';
 import NavBarMobileOpen from './NavBarMobileOpen';
-import { useAuth } from '@/hooks/AuthProvider';
 
 export default function Navbar() {
   const isLogin = useAuth()?.user !== null;

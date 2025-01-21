@@ -1,6 +1,6 @@
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { useNavigate } from 'react-router';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Student } from '@/types/student';
+import { useNavigate } from 'react-router';
 
 interface StudentsTableListProps {
   students: Student[];

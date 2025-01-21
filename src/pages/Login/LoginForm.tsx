@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/AuthProvider';
+import { useNavigate } from 'react-router';
 
 const formSchema = z.object({
   email: z.string().email({

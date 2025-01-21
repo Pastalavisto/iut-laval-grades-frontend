@@ -1,16 +1,16 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import Navbar from './components/NavBar/NavBar.tsx';
-import Login from './pages/Login/index.tsx';
 import { ProtectedRoutes } from './components/ProtectedRoutes.tsx';
-import AuthProvider from './hooks/AuthProvider.tsx';
-import Students from './pages/Students/index.tsx';
-import Courses from './pages/Courses/index.tsx';
 import { Toaster } from './components/ui/toaster.tsx';
-import StudentPage from './pages/StudentPage/index.tsx';
+import AuthProvider from './hooks/AuthProvider.tsx';
+import './index.css';
+import Courses from './pages/Courses/index.tsx';
+import Login from './pages/Login/index.tsx';
 import Statistics from './pages/Statistics/index.tsx';
+import StudentPage from './pages/StudentPage/index.tsx';
+import Students from './pages/Students/index.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

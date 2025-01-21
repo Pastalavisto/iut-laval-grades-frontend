@@ -1,16 +1,15 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogHeader } from '@/components/ui/dialog';
-import AddCourseForm from './AddCourseForm';
-import { DialogDescription } from '@radix-ui/react-dialog';
-import { courseAddformSchema } from './AddCourseForm';
-import { z } from 'zod';
-import axios from 'axios';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
-import CoursesTableList from './CoursesTableList';
-import { Input } from '@/components/ui/input';
 import { Course } from '@/types/course';
+import { DialogDescription } from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import AddCourseForm, { courseAddformSchema } from './AddCourseForm';
+import CoursesTableList from './CoursesTableList';
 
 export default function Courses() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -57,7 +56,7 @@ export default function Courses() {
             toast({
               title: 'Code non existant',
               description: 'Vous ne pouvez pas modifier un cours non existant.',
-              variant: "destructive"
+              variant: 'destructive'
             });
           } else if (err.status === 500) {
             toast({
@@ -66,7 +65,6 @@ export default function Courses() {
             });
           }
         });
-
     } else {
       await axios
         .post(
@@ -82,10 +80,7 @@ export default function Courses() {
               title: 'Cours ajouté',
               description: 'Le cours a été ajouté avec succès.'
             });
-            setCourses([
-              ...courses,
-              res.data
-            ])
+            setCourses([...courses, res.data]);
             setOpenDialog(false);
           }
         })
@@ -94,7 +89,7 @@ export default function Courses() {
             toast({
               title: 'Code déjà existant',
               description: 'Vous ne pouvez pas ajouter un cours avec un code déjà existant.',
-              variant: "destructive"
+              variant: 'destructive'
             });
           } else if (err.status === 500) {
             toast({
@@ -103,7 +98,6 @@ export default function Courses() {
             });
           }
         });
-
     }
   }
 
@@ -167,7 +161,7 @@ export default function Courses() {
 
   useEffect(() => {
     if (!openDialog) setCourseToEdit(undefined);
-  }, [openDialog])
+  }, [openDialog]);
 
   return (
     <>
@@ -205,14 +199,13 @@ export default function Courses() {
         courses={
           search !== ''
             ? courses.filter(
-              (s) =>
-                s.code.toLowerCase().includes(search.toLowerCase()) ||
-                s.name.toLowerCase().includes(search.toLowerCase())
-            )
+                (s) =>
+                  s.code.toLowerCase().includes(search.toLowerCase()) ||
+                  s.name.toLowerCase().includes(search.toLowerCase())
+              )
             : courses
         }
         onDeleteCourse={deleteCourse}
-
       />
     </>
   );

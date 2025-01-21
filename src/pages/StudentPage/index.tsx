@@ -1,11 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/AuthProvider';
-import { Student } from '@/types/student';
-import { ArrowDownTrayIcon, PlusIcon } from '@heroicons/react/16/solid';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import GradesList from './GradesList';
 import {
   Dialog,
   DialogClose,
@@ -15,12 +8,6 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { gradeAddFormSchema } from './AddGradeForm';
-import { toast } from '@/hooks/use-toast';
-import { z } from 'zod';
-import AddGradeForm from './AddGradeForm';
-import { Grade } from '@/types/grade';
-import { Course } from '@/types/course';
 import {
   Select,
   SelectContent,
@@ -30,6 +17,18 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { useAuth } from '@/hooks/AuthProvider';
+import { toast } from '@/hooks/use-toast';
+import { Course } from '@/types/course';
+import { Grade } from '@/types/grade';
+import { Student } from '@/types/student';
+import { ArrowDownTrayIcon, PlusIcon } from '@heroicons/react/16/solid';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+import { z } from 'zod';
+import AddGradeForm, { gradeAddFormSchema } from './AddGradeForm';
+import GradesList from './GradesList';
 
 export default function StudentPage() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -68,7 +67,7 @@ export default function StudentPage() {
 
   // Either POST or PUT (add a grade, or edit a grade)
   async function onGradeFormSubmit(values: z.infer<typeof gradeAddFormSchema>) {
-    console.log(JSON.stringify(values))
+    console.log(JSON.stringify(values));
     if (values.gradeId) {
       await axios
         .put(
@@ -94,7 +93,8 @@ export default function StudentPage() {
               )
             );
           }
-        }).catch((e) => {
+        })
+        .catch((e) => {
           if (e.status === 401) {
             toast({
               title: 'Erreur',
@@ -108,7 +108,7 @@ export default function StudentPage() {
               });
             }
           }
-        })
+        });
     } else {
       const curCourse = courses.find((c) => c.id === parseInt(values.courseId));
       await axios
@@ -139,7 +139,8 @@ export default function StudentPage() {
             ]);
             setOpenDialog(false);
           }
-        }).catch((e) => {
+        })
+        .catch((e) => {
           if (e.status === 401) {
             toast({
               title: 'Erreur',
@@ -153,9 +154,7 @@ export default function StudentPage() {
               });
             }
           }
-        })
-
-
+        });
     }
   }
 
@@ -279,7 +278,7 @@ export default function StudentPage() {
   // Remove grade to edit on dialog close
   useEffect(() => {
     if (!openDialog) setGradeToEdit(undefined);
-  }, [openDialog])
+  }, [openDialog]);
 
   return (
     <>
@@ -338,10 +337,17 @@ export default function StudentPage() {
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="sm:max-w-md overflow-y-scroll max-h-screen">
           <DialogHeader>
-            <DialogTitle>{gradeToEdit ? "Modifier une note" : "Ajouter une note"}</DialogTitle>
+            <DialogTitle>{gradeToEdit ? 'Modifier une note' : 'Ajouter une note'}</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          {studentInfos && <AddGradeForm onSubmit={onGradeFormSubmit} id={studentInfos.id} courses={courses} gradeToEdit={gradeToEdit} />}
+          {studentInfos && (
+            <AddGradeForm
+              onSubmit={onGradeFormSubmit}
+              id={studentInfos.id}
+              courses={courses}
+              gradeToEdit={gradeToEdit}
+            />
+          )}
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -351,7 +357,13 @@ export default function StudentPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <GradesList isLoading={isLoading} grades={studentGrades} year={selectedYear} onDeleteGrade={handleGradeDeletion} onEditGrade={editGrade} />
+      <GradesList
+        isLoading={isLoading}
+        grades={studentGrades}
+        year={selectedYear}
+        onDeleteGrade={handleGradeDeletion}
+        onEditGrade={editGrade}
+      />
     </>
   );
 }

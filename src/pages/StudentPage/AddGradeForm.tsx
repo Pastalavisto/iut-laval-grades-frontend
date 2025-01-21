@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Course } from '@/types/course';
 import { Grade } from '@/types/grade';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 // Define the schema needed for the form based on the Grade interface
 export const gradeAddFormSchema = z.object({
@@ -27,7 +27,7 @@ export const gradeAddFormSchema = z.object({
       },
       { message: "L'année de début doit être inférieure à l'année de fin" }
     ),
-  gradeId: z.number().optional(), // For edit purposes
+  gradeId: z.number().optional() // For edit purposes
 });
 
 interface AddGradeFormProps {
@@ -137,7 +137,12 @@ export default function AddGradeForm(props: AddGradeFormProps) {
             <FormItem className="flex flex-col">
               <FormLabel>Année Scolaire</FormLabel>
               <FormControl>
-                <Input placeholder="2021-2022" {...field} value={field.value || ''} disabled={gradeToEdit !== undefined}/>
+                <Input
+                  placeholder="2021-2022"
+                  {...field}
+                  value={field.value || ''}
+                  disabled={gradeToEdit !== undefined}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -157,22 +162,20 @@ export default function AddGradeForm(props: AddGradeFormProps) {
           )}
         />
 
-        {
-          gradeToEdit && (
-            <FormField
-              control={form.control}
-              name="gradeId"
-              render={({ field }) => (
-                <FormItem className="hidden">
-                  <FormControl>
-                    <Input type='hidden' {...field} value={props.id} readOnly />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )
-        }
+        {gradeToEdit && (
+          <FormField
+            control={form.control}
+            name="gradeId"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl>
+                  <Input type="hidden" {...field} value={props.id} readOnly />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button
           type="submit"
           className="bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-primary-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Course } from '@/types/course';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Textarea } from '@/components/ui/textarea';
-import { Course } from '@/types/course';
 
 //Define the schema needed for the form
 export const courseAddformSchema = z.object({
@@ -21,7 +21,7 @@ export const courseAddformSchema = z.object({
 
 interface AddCourseFormProps {
   onSubmit: (values: z.infer<typeof courseAddformSchema>) => void;
-  courseToEdit?: Course
+  courseToEdit?: Course;
 }
 
 export default function AddCourseForm(props: AddCourseFormProps) {
@@ -81,7 +81,13 @@ export default function AddCourseForm(props: AddCourseFormProps) {
             <FormItem>
               <FormLabel>Crédits ECTS</FormLabel>
               <FormControl>
-                <Input type="number" {...field} min={1} max={60} onChange={(e) => field.onChange(Number(e.target.value))} />
+                <Input
+                  type="number"
+                  {...field}
+                  min={1}
+                  max={60}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,7 +114,7 @@ export default function AddCourseForm(props: AddCourseFormProps) {
             render={({ field }) => (
               <FormItem className="hidden">
                 <FormControl>
-                  <Input type='hidden' {...field} value={courseToEdit.id} readOnly />
+                  <Input type="hidden" {...field} value={courseToEdit.id} readOnly />
                 </FormControl>
                 <FormMessage />
               </FormItem>
