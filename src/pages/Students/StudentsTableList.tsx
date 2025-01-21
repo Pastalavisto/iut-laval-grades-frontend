@@ -1,14 +1,14 @@
-import { z } from 'zod';
-
-import { userAddformSchema } from './AddStudentForm';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { useNavigate } from 'react-router';
+import { Student } from '@/types/student';
 
 interface StudentsTableListProps {
-  students: z.infer<typeof userAddformSchema>[]; //Array of students
+  students: Student[];
 }
 
 export default function StudentsTableList(props: StudentsTableListProps) {
   const students = props.students;
+  const navigate = useNavigate();
 
   return (
     <Table>
@@ -21,7 +21,11 @@ export default function StudentsTableList(props: StudentsTableListProps) {
       </TableHeader>
       <TableBody>
         {students.map((student) => (
-          <TableRow key={student.studentId}>
+          <TableRow
+            key={student.studentId}
+            className="cursor-pointer"
+            onClick={() => navigate(`/students/${student.id}`)}
+          >
             <TableCell>{student.firstName + ' ' + student.lastName}</TableCell>
             <TableCell>{student.email}</TableCell>
             <TableCell>{student.studentId}</TableCell>

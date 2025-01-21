@@ -27,7 +27,10 @@ export default function AddStudentForm(props: AddStudentFormProps) {
   //Create the form with the schema
   //z.infer generates the type of the form based on the schema
   const form = useForm<z.infer<typeof userAddformSchema>>({
-    resolver: zodResolver(userAddformSchema)
+    resolver: zodResolver(userAddformSchema),
+    defaultValues: {
+      dateOfBirth: new Date(),
+    }
   });
 
   //Whenever the dialog form is submitted
