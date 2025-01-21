@@ -29,11 +29,7 @@ export default function AddStudentForm(props: AddStudentFormProps) {
   const form = useForm<z.infer<typeof userAddformSchema>>({
     resolver: zodResolver(userAddformSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
       dateOfBirth: new Date(),
-      studentId: ''
     }
   });
 
