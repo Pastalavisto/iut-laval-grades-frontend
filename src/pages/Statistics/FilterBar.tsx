@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface FilterBarProps {
   suggestions: ValueProps[];
@@ -14,9 +14,10 @@ interface ValueProps {
 export default function FilterBar({ suggestions, onChange, defaultValue }: FilterBarProps) {
   const [filteredSuggestions, setFilteredSuggestions] = useState<ValueProps[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [value, setValue] = useState('');
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    setValue(event.target.value);
 
     if (value.trim() === '') {
       setFilteredSuggestions([]);
@@ -35,12 +36,15 @@ export default function FilterBar({ suggestions, onChange, defaultValue }: Filte
     onChange(suggestion.id);
   };
 
+  useEffect(() => {
+    setValue(defaultValue || '');
+  }, [defaultValue]);
   return (
     <div className="mb-4 w-full z-10 relative">
       <input
         type="text"
         className="w-full p-2 rounded border-gray-300 focus:outline-none focus:border-blue-500 border-2"
-        value={defaultValue || ""}
+        value={value || ""}
         onChange={handleInputChange}
         placeholder="Tapez un mot clé..."
         onFocus={() => setShowSuggestions(filteredSuggestions.length > 0)}
