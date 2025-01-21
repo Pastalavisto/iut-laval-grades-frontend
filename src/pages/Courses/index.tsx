@@ -10,13 +10,15 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import CoursesTableList from './CoursesTableList';
 import { Input } from '@/components/ui/input';
+import { Course } from '@/types/course';
 
 export default function Courses() {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const [courses, setCourses] = useState<z.infer<typeof courseAddformSchema>[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
+  const [courseToEdit, setCourseToEdit] = useState<Course | undefined>(undefined);
 
   const user = useAuth();
   const { toast } = useToast();
@@ -24,38 +26,85 @@ export default function Courses() {
   //Whenever the dialog form is submitted
   //Sends data to the server
   async function onSubmit(values: z.infer<typeof courseAddformSchema>) {
-    await axios
-      .post(
-        API_URL + '/courses',
-        {
-          ...values //Spread the values
-        },
-        { headers: { Authorization: `Bearer ${user?.user?.token}` } }
-      )
-      .then((res) => {
-        if (res.status === 201) {
-          toast({
-            title: 'Cours ajouté',
-            description: 'Le cours a été ajouté avec succès.'
-          });
-          setCourses([...courses, values]);
-          setOpenDialog(false);
-        }
-      })
-      .catch((err) => {
-        if (err.status === 409) {
-          toast({
-            title: 'Code déjà existant',
-            description: 'Vous ne pouvez pas ajouter un cours avec un code déjà existant.',
-            variant: "destructive"
-          });
-        } else if (err.status === 500) {
-          toast({
-            title: 'Erreur',
-            description: 'Une erreur est survenue lors de l’ajout du cours.'
-          });
-        }
-      });
+    if (values.courseId) {
+      await axios
+        .put(
+          API_URL + '/courses/' + values.courseId,
+          {
+            ...values //Spread the values
+          },
+          { headers: { Authorization: `Bearer ${user?.user?.token}` } }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            toast({
+              title: 'Cours modifié',
+              description: 'Le cours a été modifié avec succès.'
+            });
+            setOpenDialog(false);
+            setCourseToEdit(undefined);
+            setCourses((prevCourses) =>
+              prevCourses.map((course) =>
+                course.id === values.courseId
+                  ? { ...course, ...values, id: values.courseId } // Ajoute id à partir de courseId
+                  : course
+              )
+            );
+          }
+        })
+        .catch((err) => {
+          if (err.status === 404) {
+            toast({
+              title: 'Code non existant',
+              description: 'Vous ne pouvez pas modifier un cours non existant.',
+              variant: "destructive"
+            });
+          } else if (err.status === 500) {
+            toast({
+              title: 'Erreur',
+              description: 'Une erreur est survenue lors de la modification du cours.'
+            });
+          }
+        });
+
+    } else {
+      await axios
+        .post(
+          API_URL + '/courses',
+          {
+            ...values //Spread the values
+          },
+          { headers: { Authorization: `Bearer ${user?.user?.token}` } }
+        )
+        .then((res) => {
+          if (res.status === 201) {
+            toast({
+              title: 'Cours ajouté',
+              description: 'Le cours a été ajouté avec succès.'
+            });
+            setCourses([
+              ...courses,
+              res.data
+            ])
+            setOpenDialog(false);
+          }
+        })
+        .catch((err) => {
+          if (err.status === 409) {
+            toast({
+              title: 'Code déjà existant',
+              description: 'Vous ne pouvez pas ajouter un cours avec un code déjà existant.',
+              variant: "destructive"
+            });
+          } else if (err.status === 500) {
+            toast({
+              title: 'Erreur',
+              description: 'Une erreur est survenue lors de l’ajout du cours.'
+            });
+          }
+        });
+
+    }
   }
 
   //Fetch the courses from the server
@@ -78,9 +127,47 @@ export default function Courses() {
     });
   }
 
+  async function deleteCourse(id: number) {
+    await axios
+      .delete(API_URL + '/courses/' + id, { headers: { Authorization: `Bearer ${user?.user?.token}` } })
+      .then((res) => {
+        if (res.status === 204) {
+          toast({
+            title: 'Cours supprimé',
+            description: 'Le cours a été supprimé avec succès.'
+          });
+          setCourses(courses.filter((course) => course.id !== id));
+        }
+      })
+      .catch((err) => {
+        if (err.status === 404) {
+          toast({
+            variant: 'destructive',
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la suppression du cours.'
+          });
+        } else if (err.status === 500) {
+          toast({
+            variant: 'destructive',
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la suppression du cours.'
+          });
+        }
+      });
+  }
+
+  function editCourse(course: Course) {
+    setOpenDialog(true);
+    setCourseToEdit(course);
+  }
+
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  useEffect(() => {
+    if (!openDialog) setCourseToEdit(undefined);
+  }, [openDialog])
 
   return (
     <>
@@ -103,7 +190,7 @@ export default function Courses() {
             <DialogTitle>Ajouter un cours</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <AddCourseForm onSubmit={onSubmit} />
+          <AddCourseForm onSubmit={onSubmit} courseToEdit={courseToEdit} />
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -114,15 +201,18 @@ export default function Courses() {
         </DialogContent>
       </Dialog>
       <CoursesTableList
+        onEditCourse={editCourse}
         courses={
           search !== ''
             ? courses.filter(
-                (s) =>
-                  s.code.toLowerCase().includes(search.toLowerCase()) ||
-                  s.name.toLowerCase().includes(search.toLowerCase())
-              )
+              (s) =>
+                s.code.toLowerCase().includes(search.toLowerCase()) ||
+                s.name.toLowerCase().includes(search.toLowerCase())
+            )
             : courses
         }
+        onDeleteCourse={deleteCourse}
+
       />
     </>
   );
