@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 
 interface FilterBarProps {
-  suggestions: string[];
-  onFilterChange: (newFilters: { [key: string]: string }) => void;
+  suggestions: ValueProps[];
+  onChange: (value: number) => void;
+  defaultValue?: string;
 }
 
-const FilterBar: React.FC<FilterBarProps> = ({ suggestions, onFilterChange }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+interface ValueProps {
+  value: string;
+  id: number;
+}
+
+export default function FilterBar({ suggestions, onChange, defaultValue }: FilterBarProps) {
+  const [filteredSuggestions, setFilteredSuggestions] = useState<ValueProps[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    setInputValue(value);
 
     if (value.trim() === '') {
       setFilteredSuggestions([]);
@@ -20,91 +24,41 @@ const FilterBar: React.FC<FilterBarProps> = ({ suggestions, onFilterChange }) =>
       return;
     }
 
-    const matches = suggestions.filter((suggestion) =>
-      suggestion.toLowerCase().includes(value.toLowerCase())
-    );
+    const matches = suggestions.filter((suggestion) => suggestion.value.toLowerCase().includes(value.toLowerCase()));
 
     setFilteredSuggestions(matches);
     setShowSuggestions(matches.length > 0);
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInputValue(suggestion);
+  const handleSuggestionClick = (suggestion: ValueProps) => {
     setShowSuggestions(false);
-    onFilterChange({ search: suggestion });
-  };
-
-  const styles = {
-    filterBar: {
-      position: 'relative' as const,
-      width: '100%',
-      margin: '0 auto',
-    },
-    input: {
-      width: '100%',
-      padding: '10px',
-      fontSize: '14px',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-    },
-    suggestionsList: {
-      position: 'absolute' as const,
-      top: '100%',
-      left: 0,
-      right: 0,
-      zIndex: 1000,
-      backgroundColor: '#fff',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      listStyleType: 'none',
-      margin: 0,
-      padding: 0,
-      maxHeight: '200px',
-      overflowY: 'auto' as const,
-    },
-    suggestionItem: {
-      padding: '10px',
-      cursor: 'pointer',
-      borderBottom: '1px solid #eee',
-    },
-    suggestionItemHover: {
-      backgroundColor: '#f5f5f5',
-    },
+    onChange(suggestion.id);
   };
 
   return (
-    <div style={styles.filterBar}>
+    <div className="mb-4 w-full z-10 relative">
       <input
         type="text"
-        style={styles.input}
-        value={inputValue}
+        className="w-full p-2 rounded border-gray-300 focus:outline-none focus:border-blue-500 border-2"
+        value={defaultValue || ""}
         onChange={handleInputChange}
         placeholder="Tapez un mot clé..."
         onFocus={() => setShowSuggestions(filteredSuggestions.length > 0)}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
       />
       {showSuggestions && (
-        <ul style={styles.suggestionsList}>
+        <ul className="w-full border-1 p2 bg-white shadow-md">
           {filteredSuggestions.map((suggestion, index) => (
             <li
               key={index}
-              style={styles.suggestionItem}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = styles.suggestionItemHover.backgroundColor)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = 'transparent')
-              }
               onClick={() => handleSuggestionClick(suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-100"
             >
-              {suggestion}
+              {suggestion.value}
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-};
-
-export { FilterBar };
+}
