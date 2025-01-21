@@ -21,6 +21,15 @@ import { z } from 'zod';
 import AddGradeForm from './AddGradeForm';
 import { Grade } from '@/types/grade';
 import { Course } from '@/types/course';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 export default function StudentPage() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -31,6 +40,29 @@ export default function StudentPage() {
   const [studentInfos, setStudentInfos] = useState<Student | undefined>(undefined);
   const [courses, setCourses] = useState<Course[] | []>([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('');
+  const [years, setYears] = useState<string[]>([]);
+
+  async function fetchYears() {
+    await axios
+      .get(API_URL + '/grades/years', {
+        headers: {
+          Authorization: `Bearer ${user?.user?.token}`
+        }
+      })
+      .then((res) => {
+        setYears(res.data);
+        setSelectedYear(res.data[0]);
+      })
+      .catch((err) => {
+        if (err.status === 500) {
+          toast({
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la récupération des années.'
+          });
+        }
+      });
+  }
 
   async function onSubmit(values: z.infer<typeof gradeAddFormSchema>) {
     const curCourse = courses.find((c) => c.id === parseInt(values.courseId));
@@ -93,36 +125,58 @@ export default function StudentPage() {
 
   // Fetches the PDF transcript file
   const fetchTranscript = async () => {
+    if (!selectedYear) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Veuillez sélectionner une année.'
+      });
+      return;
+    }
     await axios
       .get(API_URL + `/grades/student/${id}/transcript`, {
         responseType: 'blob',
-        params: { academicYear: '2025-2026' },
+        params: { academicYear: selectedYear },
         headers: {
           Authorization: `Bearer ${user?.user?.token}`
         }
       })
       .then((res) => {
         window.open(URL.createObjectURL(res.data));
+      })
+      .catch((err) => {
+        if (err.status === 404) {
+          toast({
+            variant: 'destructive',
+            title: 'Erreur',
+            description: 'Aucune note n’a été trouvée pour cet étudiant.'
+          });
+        }
       });
   };
 
   async function fetchCourses() {
-    axios.get(API_URL + '/courses', { headers: { Authorization: `Bearer ${user?.user?.token}` } }).then((res) => {
-      if (res.status === 200 && res.data) {
-        setCourses(res.data);
-      } else if (res.status === 401) {
-        toast({
-          title: 'Erreur',
-          description: 'Vous n’êtes pas autorisé à effectuer cette action.'
-        });
-        user?.logOut();
-      } else if (res.status === 500) {
-        toast({
-          title: 'Erreur',
-          description: 'Une erreur est survenue lors de la récupération des cours.'
-        });
-      }
-    });
+    axios
+      .get(API_URL + '/courses', { headers: { Authorization: `Bearer ${user?.user?.token}` } })
+      .then((res) => {
+        if (res.status === 200 && res.data) {
+          setCourses(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.status === 401) {
+          toast({
+            title: 'Erreur',
+            description: 'Vous n’êtes pas autorisé à effectuer cette action.'
+          });
+          user?.logOut();
+        } else if (err.status === 500) {
+          toast({
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la récupération des cours.'
+          });
+        }
+      });
   }
 
   async function handleGradeDeletion(gradeId: number) {
@@ -157,6 +211,7 @@ export default function StudentPage() {
         .then((res) => setStudentInfos(res))
         .catch((err) => console.log(err));
       await fetchCourses();
+      await fetchYears();
     }
 
     fetchPageData();
@@ -194,6 +249,26 @@ export default function StudentPage() {
           <span className="font-bold">Date de naissance</span>
           <span>{studentInfos ? studentInfos.dateOfBirth : 'Chargement...'}</span>
         </h3>
+        <Select
+          value={selectedYear}
+          onValueChange={(value) => {
+            setSelectedYear(value);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sélectionner une année" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Année</SelectLabel>
+              {years.map((year) => (
+                <SelectItem key={year} value={year}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -212,7 +287,7 @@ export default function StudentPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <GradesList grades={studentGrades} onDeleteGrade={handleGradeDeletion} />
+      <GradesList grades={studentGrades} year={selectedYear} onDeleteGrade={handleGradeDeletion} />
     </>
   );
 }

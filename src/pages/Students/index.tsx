@@ -43,13 +43,16 @@ export default function Students() {
           });
           setStudents([...students, res.data]);
           setOpenDialog(false);
-        } else if (res.status === 401) {
+        }
+      })
+      .catch((err) => {
+        if (err.status === 401) {
           toast({
             title: 'Erreur',
             description: 'Vous n’êtes pas autorisé à effectuer cette action.'
           });
           user?.logOut();
-        } else if (res.status === 500) {
+        } else if (err.status === 500) {
           toast({
             title: 'Erreur',
             description: 'Une erreur est survenue lors de l’ajout de l’étudiant.'
@@ -60,22 +63,27 @@ export default function Students() {
 
   //Fetch the students from the server
   async function fetchStudents() {
-    axios.get(API_URL + '/students', { headers: { Authorization: `Bearer ${user?.user?.token}` } }).then((res) => {
-      if (res.status === 200 && res.data) {
-        setStudents(res.data);
-      } else if (res.status === 401) {
-        toast({
-          title: 'Erreur',
-          description: 'Vous n’êtes pas autorisé à effectuer cette action.'
-        });
-        user?.logOut();
-      } else if (res.status === 500) {
-        toast({
-          title: 'Erreur',
-          description: 'Une erreur est survenue lors de la récupération des étudiants.'
-        });
-      }
-    });
+    axios
+      .get(API_URL + '/students', { headers: { Authorization: `Bearer ${user?.user?.token}` } })
+      .then((res) => {
+        if (res.status === 200 && res.data) {
+          setStudents(res.data);
+        }
+      })
+      .catch((err) => {
+        if (err.status === 401) {
+          toast({
+            title: 'Erreur',
+            description: 'Vous n’êtes pas autorisé à effectuer cette action.'
+          });
+          user?.logOut();
+        } else if (err.status === 500) {
+          toast({
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors de la récupération des étudiants.'
+          });
+        }
+      });
   }
 
   useEffect(() => {

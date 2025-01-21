@@ -14,7 +14,7 @@ export default function StudentsTableList(props: StudentsTableListProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Nom</TableHead>
+          <TableHead className="w-[20%]">Nom</TableHead>
           <TableHead>Adresse Mail</TableHead>
           <TableHead>Numéro d'étudiant</TableHead>
         </TableRow>
